@@ -1,0 +1,43 @@
+name: Send the list of PRs awaiting review to Teams
+on:
+  workflow_dispatch:
+
+jobs:
+  reminder:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get PRs awaiting review
+        id: prs
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.TOKEN }}
+          script: |
+            const response = await github.rest.search.issuesAndPullRequests({
+              q: 'is:pr is:open review-requested:@me',
+              per_page: 100,
+              headers: {
+                'x-github-api-version': '2022-11-28',
+              },
+            });
+            core.setOutput('data', response.data.items.map((item) => ({
+              title: item.title,
+              html_url: item.html_url,
+            })));
+
+      - name: Format message
+        id: format
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const data = JSON.parse('${{ steps.prs.outputs.data }}');
+            let dataStr = '';
+            data.forEach((item) => {
+              dataStr += `* [${item.title}](${item.html_url})\n`;
+            });
+            core.setOutput('data', dataStr);
+
+      - name: Send message to Teams
+        uses: neonidian/teams-notify-build-status@v3
+        with:
+          webhookUrl: ${{ secrets.TEAMS_WEBHOOK_URL }}
+          message: ${{ steps.format.outputs.data }}
