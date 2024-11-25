@@ -1,6 +1,8 @@
 name: Send the list of PRs awaiting review to Teams
 on:
   workflow_dispatch:
+  schedule:
+    - cron: '0 8 * * 1-5'
 
 jobs:
   reminder:
