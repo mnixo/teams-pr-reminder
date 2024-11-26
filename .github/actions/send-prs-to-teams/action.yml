@@ -1,0 +1,6 @@
+name: 'send-prs-to-teams'
+description: 'Retrieves the list of PRs that are awaiting review from a user and sends them to an MS Teams channel'
+
+runs:
+  using: 'node20'
+  main: 'index.mjs'
