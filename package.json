@@ -1,5 +1,8 @@
 {
   "name": "teams-gh-pr-reminder",
   "version": "1.0.0",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "prettier": "3.4.1"
+  }
 }
