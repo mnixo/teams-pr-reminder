@@ -14,6 +14,7 @@ const response = await octokit.rest.search.issuesAndPullRequests({
   },
 });
 
+// group the PRs by repository
 const prs = {};
 response.data.items.forEach((pr) => {
   const repository = pr.repository_url.replace('https://api.github.com/repos/', '');
@@ -23,6 +24,7 @@ response.data.items.forEach((pr) => {
   prs[repository].push(pr);
 });
 
+// create the message to send to Teams
 let message = '';
 Object.keys(prs).forEach((repository) => {
   message += `### \`${repository}\`:\n`;
@@ -35,6 +37,7 @@ const messagePayload = {
   text: message,
 };
 
+// send the message to Teams
 await axios.post(process.env.TEAMS_WEBHOOK_URL, messagePayload, {
   headers: { 'Content-Type': 'application/json' },
 });
